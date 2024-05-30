@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,93 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique()
+  password String
+  role     Role     @default(USER)
+  patient  Patient?
+  doctor   Doctor?
+}
+
+enum Role {
+  Patient
+  Doctor
+  USER
+}
+
+model Patient {
+  id              Int              @id @default(autoincrement())
+  date_of_brirh   DateTime
+  address         String
+  medicalHisotory MedicalHistory[]
+  prescriptions   Prescription[]
+  appointements   Appointement[]
+  role            Role             @default(Patient)
+  userId          Int              @unique
+  user            User             @relation(fields: [userId], references: [id])
+  
+}
+
+model Doctor {
+  id              Int              @id @default(autoincrement())
+  sepecialization String
+  medicalHisotory MedicalHistory[]
+  prescriptions   Prescription[]
+  appointements   Appointement[]
+  role            Role             @default(Doctor)
+  userId          Int              @unique
+  user            User             @relation(fields: [userId], references: [id])
+}
+
+model Appointement {
+  id         Int      @id @default(autoincrement())
+  patient_id Int
+  doctor_id  Int
+  startDate       DateTime
+  endDate       DateTime
+  reason     String
+  doctor     Doctor   @relation(fields: [doctor_id], references: [id])
+  patient    Patient  @relation(fields: [patient_id], references: [id])
+  status String
+
+  @@unique([patient_id, doctor_id, startDate])
+}
+
+model Treatment {
+  id         Int      @id @default(autoincrement())
+  dosage     String
+  frequency  Int
+  medication String
+  start_date DateTime
+  end_date   DateTime
+  prescription_id Int
+  prescription  Prescription  @relation(fields: [prescription_id], references: [id])
+
+
+
+  
+}
+
+model Prescription {
+  id         Int    @id @default(autoincrement())
+  patient_id Int
+  doctor_id  Int
+  doctor  Doctor  @relation(fields: [doctor_id], references: [id])
+  patient Patient @relation(fields: [patient_id], references: [id])
+  treatments Treatment[]
+}
+
+model MedicalHistory {
+  id         Int     @id @default(autoincrement())
+  patient_id Int
+  doctor_id  Int
+  doctor     Doctor  @relation(fields: [doctor_id], references: [id])
+  patient    Patient @relation(fields: [patient_id], references: [id])
+  diagnosis  String
+  treatment  String
+  note       String
 }
