@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique()
-  password String
-  role     Role     @default(USER)
-  patient  Patient?
-  doctor   Doctor?
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  email     String   @unique()
+  password  String
+  role      Role     @default(USER)
+  patient   Patient?
+  doctor    Doctor?
 }
 
 enum Role {
@@ -33,7 +34,6 @@ model Patient {
   role            Role             @default(Patient)
   userId          Int              @unique
   user            User             @relation(fields: [userId], references: [id])
-  
 }
 
 model Doctor {
@@ -51,37 +51,33 @@ model Appointement {
   id         Int      @id @default(autoincrement())
   patient_id Int
   doctor_id  Int
-  startDate       DateTime
-  endDate       DateTime
+  startDate  DateTime
+  endDate    DateTime
   reason     String
   doctor     Doctor   @relation(fields: [doctor_id], references: [id])
   patient    Patient  @relation(fields: [patient_id], references: [id])
-  status String
+  status     String
 
   @@unique([patient_id, doctor_id, startDate])
 }
 
 model Treatment {
-  id         Int      @id @default(autoincrement())
-  dosage     String
-  frequency  Int
-  medication String
-  start_date DateTime
-  end_date   DateTime
+  id              Int          @id @default(autoincrement())
+  dosage          String
+  frequency       Int
+  medication      String
+  start_date      DateTime
+  end_date        DateTime
   prescription_id Int
-  prescription  Prescription  @relation(fields: [prescription_id], references: [id])
-
-
-
-  
+  prescription    Prescription @relation(fields: [prescription_id], references: [id])
 }
 
 model Prescription {
-  id         Int    @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   patient_id Int
   doctor_id  Int
-  doctor  Doctor  @relation(fields: [doctor_id], references: [id])
-  patient Patient @relation(fields: [patient_id], references: [id])
+  doctor     Doctor      @relation(fields: [doctor_id], references: [id])
+  patient    Patient     @relation(fields: [patient_id], references: [id])
   treatments Treatment[]
 }
 
