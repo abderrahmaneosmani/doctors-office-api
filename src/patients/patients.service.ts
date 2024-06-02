@@ -8,14 +8,27 @@ export class PatientsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createPatientDto: CreatePatientDto) {
-    const date_birth = new Date(createPatientDto.date_of_brirh);
+    const { firstname, lastname, email, password } = createPatientDto.user;
+    try {
+      return await this.prisma.$transaction(async (tr) => {
+        const user = await tr.user.create({
+          data: { firstname, lastname, email, password, role: 'PATIENT' },
+        });
 
-    return await this.prisma.patient.create({
-      data: {
-        ...createPatientDto,
-        date_of_brirh: date_birth,
-      },
-    });
+        const patient = await tr.patient.create({
+          data: {
+            userId: user.id,
+            date_of_brirh: new Date('2020'),
+            address: createPatientDto.address,
+          },
+        });
+
+        return { user, patient };
+      });
+    } catch (error) {
+      console.error('Error creating patient:', error);
+      throw error;
+    }
   }
 
   async findAll() {
@@ -34,9 +47,11 @@ export class PatientsService {
   }
 
   async update(id: number, updatePatientDto: UpdatePatientDto) {
+    const { address, date_of_brirh } = updatePatientDto;
+    const patient = { address, date_of_brirh };
     return await this.prisma.patient.update({
       where: { id },
-      data: updatePatientDto,
+      data: patient,
     });
   }
 

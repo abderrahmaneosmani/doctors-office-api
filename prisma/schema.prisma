@@ -7,41 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  PATIENT
+  DOCTOR
+}
 model User{
   id              Int              @id @default(autoincrement())
   firstname String
   lastname  String
   email     String   @unique()
   password String
-  
-
+  role       Role       @default(USER)
+  patient   Patient?
+  doctor    Doctor?  
 }
+
 
 
 model Patient {
   id              Int              @id @default(autoincrement())
   date_of_brirh   DateTime
   address         String
-  firstname String
-  lastname  String
-  email     String   @unique()
-  password String
   medicalHisotory MedicalHistory[]
   prescriptions   Prescription[]
   appointements   Appointement[]
+  userId Int @unique()
+  user User @relation(fields: [userId],references: [id])
 }
 
 
 model Doctor {
   id              Int              @id @default(autoincrement())
   sepecialization String
-  firstname String
-  lastname  String
-  email     String   @unique()
-  password String
   medicalHisotory MedicalHistory[]
   prescriptions   Prescription[]
   appointements   Appointement[]
+  userId Int  @unique
+  user User @relation(fields: [userId],references: [id])
+
 }
 
 model Appointement {

@@ -31,6 +31,7 @@ export class UsersService {
         email: true,
         firstname: true,
         lastname: true,
+        role: true,
       },
     });
     if (users.length) return users;
@@ -46,6 +47,7 @@ export class UsersService {
         email: true,
         firstname: true,
         lastname: true,
+        role: true,
       },
     });
     if (!user.id) {

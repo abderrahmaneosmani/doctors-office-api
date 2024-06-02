@@ -1,4 +1,4 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -8,13 +8,30 @@ export class DoctorsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createDoctorDto: CreateDoctorDto) {
-    const doctor = await this.prisma.doctor.create({
-      data: createDoctorDto,
-    });
-    if (!doctor) {
-      throw new BadGatewayException('Cant create a doctor');
+    try {
+      const handleCreation = await this.prisma.$transaction(async (tr) => {
+        const user = await tr.user.create({
+          data: {
+            email: createDoctorDto.user.email,
+            firstname: createDoctorDto.user.firstname,
+            lastname: createDoctorDto.user.lastname,
+            password: createDoctorDto.user.password,
+            role: 'DOCTOR',
+          },
+        });
+
+        const doctor = await tr.doctor.create({
+          data: {
+            userId: user.id,
+            sepecialization: 'skks',
+          },
+        });
+        return { user, doctor };
+      });
+      return handleCreation;
+    } catch (error) {
+      throw error;
     }
-    return doctor;
   }
 
   async findAll() {
@@ -32,7 +49,9 @@ export class DoctorsService {
       where: {
         id,
       },
-      data: updateDoctorDto,
+      data: {
+        sepecialization: updateDoctorDto.sepecialization,
+      },
     });
     return updateDoctor;
   }
