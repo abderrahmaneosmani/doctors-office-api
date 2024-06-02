@@ -7,20 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
+model User{
+  id              Int              @id @default(autoincrement())
   firstname String
   lastname  String
   email     String   @unique()
-  password  String
-  role      Role     @default(USER)
+
 }
 
-enum Role {
-  Patient
-  Doctor
-  USER
-}
 
 model Patient {
   id              Int              @id @default(autoincrement())
@@ -29,18 +23,20 @@ model Patient {
   medicalHisotory MedicalHistory[]
   prescriptions   Prescription[]
   appointements   Appointement[]
-  role            Role             @default(Patient)
-  userId          Int              @unique
+  firstname String
+  lastname  String
+  email     String   @unique()
 }
 
 model Doctor {
   id              Int              @id @default(autoincrement())
   sepecialization String
+  firstname String
+  lastname  String
+  email     String   @unique()
   medicalHisotory MedicalHistory[]
   prescriptions   Prescription[]
   appointements   Appointement[]
-  role            Role             @default(Doctor)
-  userId          Int              @unique
 }
 
 model Appointement {
