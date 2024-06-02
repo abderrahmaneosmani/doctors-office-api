@@ -21,13 +21,15 @@ model Patient {
   id              Int              @id @default(autoincrement())
   date_of_brirh   DateTime
   address         String
-  medicalHisotory MedicalHistory[]
-  prescriptions   Prescription[]
-  appointements   Appointement[]
   firstname String
   lastname  String
   email     String   @unique()
+  password String
+  medicalHisotory MedicalHistory[]
+  prescriptions   Prescription[]
+  appointements   Appointement[]
 }
+
 
 model Doctor {
   id              Int              @id @default(autoincrement())
