@@ -27,6 +27,9 @@ export class PatientsService {
       where: {
         id,
       },
+      include: {
+        appointements: true,
+      },
     });
   }
 
