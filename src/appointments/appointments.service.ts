@@ -2,28 +2,87 @@ import { Injectable } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAppointementDto } from './dto/update-appointment.dto';
+import { PatientsService } from 'src/patients/patients.service';
+import { DoctorsService } from 'src/doctors/doctors.service';
+import { checkAvailableDate } from 'src/utils';
 
 @Injectable()
 export class AppointementsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly patient: PatientsService,
+    private readonly doctor: DoctorsService,
+  ) {}
 
-  async create(createAppointementDto: CreateAppointmentDto) {
-    const appointement = await this.prisma.appointement.create({
-      data: {
-        startDate: new Date(createAppointementDto.startDate),
-        endDate: new Date(createAppointementDto.endDate),
-        reason: createAppointementDto.reason,
-        patient: {
-          connect: { id: createAppointementDto.patient_id },
-        },
-        doctor: {
-          connect: { id: createAppointementDto.doctor_id },
-        },
-        status: 'Pending',
-      },
-    });
+  async create(createAppointmentDto: CreateAppointmentDto) {
+    try {
+      const checkStartAppointment = createAppointmentDto.startDate;
+      const checkEndAppointment = createAppointmentDto.endDate;
 
-    return appointement.id;
+      const AvailablePatient = await this.patient.findOne(
+        createAppointmentDto.patient_id,
+      );
+      const availableDoctor = await this.doctor.findOne(
+        createAppointmentDto.doctor_id,
+      );
+
+      const patientConflict = AvailablePatient.appointements.some(
+        (appointement) => {
+          const start = checkAvailableDate(
+            checkStartAppointment,
+            appointement.startDate,
+            appointement.endDate,
+          );
+          const end = checkAvailableDate(
+            checkEndAppointment,
+            appointement.startDate,
+            appointement.endDate,
+          );
+          return start && end;
+        },
+      );
+      const doctorConflict = await availableDoctor.appointements.some(
+        (appointement) => {
+          const start = checkAvailableDate(
+            checkStartAppointment,
+            appointement.startDate,
+            appointement.endDate,
+          );
+          const end = checkAvailableDate(
+            checkEndAppointment,
+            appointement.startDate,
+            appointement.endDate,
+          );
+          return start && end;
+        },
+      );
+      if (patientConflict) {
+        throw new Error('The patient has a scheduling conflict.');
+      }
+
+      if (doctorConflict) {
+        throw new Error('The doctor has a scheduling conflict.');
+      }
+
+      const appointement = await this.prisma.appointement.create({
+        data: {
+          startDate: new Date(createAppointmentDto.startDate),
+          endDate: new Date(createAppointmentDto.endDate),
+          reason: createAppointmentDto.reason,
+          patient: {
+            connect: { id: createAppointmentDto.patient_id },
+          },
+          doctor: {
+            connect: { id: createAppointmentDto.doctor_id },
+          },
+          status: createAppointmentDto.status,
+        },
+      });
+
+      return appointement.id;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   async findAll() {

@@ -41,6 +41,9 @@ export class DoctorsService {
   async findOne(id: number) {
     return await this.prisma.doctor.findUnique({
       where: { id },
+      include: {
+        appointements: true,
+      },
     });
   }
 
