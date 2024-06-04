@@ -3,6 +3,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StatusAppointment } from 'src/appointments/dto/create-appointment.dto';
+import { cryptPassword } from 'src/auth/utils';
 
 @Injectable()
 export class PatientsService {
@@ -10,10 +11,19 @@ export class PatientsService {
 
   async create(createPatientDto: CreatePatientDto) {
     const { firstname, lastname, email, password } = createPatientDto.user;
+
+    const hashPassword = await cryptPassword(password);
+
     try {
       return await this.prisma.$transaction(async (tr) => {
         const user = await tr.user.create({
-          data: { firstname, lastname, email, password, role: 'PATIENT' },
+          data: {
+            firstname,
+            lastname,
+            email,
+            password: hashPassword,
+            role: 'PATIENT',
+          },
         });
 
         const patient = await tr.patient.create({

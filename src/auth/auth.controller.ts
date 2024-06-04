@@ -11,6 +11,26 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: CreateCredentialDto) {
-    return this.authService.signIn(signInDto.email, signInDto.password);
+    return this.authService.signIn(signInDto.email, signInDto.password, 'USER');
+  }
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('doctor/login')
+  signInDoctor(@Body() signInDto: CreateCredentialDto) {
+    return this.authService.signIn(
+      signInDto.email,
+      signInDto.password,
+      'DOCTOR',
+    );
+  }
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('patient/login')
+  signInPatient(@Body() signInDto: CreateCredentialDto) {
+    return this.authService.signIn(
+      signInDto.email,
+      signInDto.password,
+      'PATIENT',
+    );
   }
 }

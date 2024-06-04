@@ -3,6 +3,7 @@ import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StatusAppointment } from 'src/appointments/dto/create-appointment.dto';
+import { cryptPassword } from 'src/auth/utils';
 
 @Injectable()
 export class DoctorsService {
@@ -16,7 +17,7 @@ export class DoctorsService {
             email: createDoctorDto.user.email,
             firstname: createDoctorDto.user.firstname,
             lastname: createDoctorDto.user.lastname,
-            password: createDoctorDto.user.password,
+            password: await cryptPassword(createDoctorDto.user.password),
             role: 'DOCTOR',
           },
         });

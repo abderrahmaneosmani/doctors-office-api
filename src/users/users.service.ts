@@ -6,15 +6,14 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
+import { cryptPassword } from 'src/auth/utils';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
-    const hashPassword = await bcrypt.hash(createUserDto.password, 10);
-    createUserDto.password = hashPassword;
+    createUserDto.password = await cryptPassword(createUserDto.password);
     const create = await this.prisma.user.create({
       data: createUserDto,
     });
@@ -79,14 +78,15 @@ export class UsersService {
     }
     return deleteUser?.id;
   }
-  async findUserByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string, role: Role): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: {
         email: email,
+        role: role,
       },
     });
     if (!user?.id) {
-      throw new NotFoundException(`User with ID ${email} not found`);
+      throw new NotFoundException(`User with email : ${email} not found`);
     }
     return user;
   }
