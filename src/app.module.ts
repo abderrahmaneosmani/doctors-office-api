@@ -10,6 +10,7 @@ import { AppointementsModule } from './appointments/appointments.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthGuard } from './auth/auth.guard';
     PatientsModule,
     AppointementsModule,
     AuthModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [

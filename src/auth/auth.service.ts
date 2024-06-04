@@ -17,8 +17,11 @@ export class AuthService {
     if (!isValidPass) {
       throw new UnauthorizedException();
     }
-    const firstNameLastName = user.firstname + user.lastname;
-    const payload = { sub: user.id, user: firstNameLastName };
+    delete user['password'];
+
+    const { id, ...rest } = user;
+
+    const payload = { sub: id, user: rest };
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };
