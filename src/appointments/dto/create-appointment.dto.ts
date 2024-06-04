@@ -3,7 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 
 export enum StatusAppointment {
   'Completed' = 'completed',
-  'Cancel' = 'cancel',
+  'Cancel' = 'canceled',
 }
 
 export class CreateAppointmentDto {
