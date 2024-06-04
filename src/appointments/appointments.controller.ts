@@ -10,8 +10,10 @@ import {
 import { AppointementsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointementDto } from './dto/update-appointment.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('appointements')
+@ApiBearerAuth()
 export class AppointementsController {
   constructor(private readonly appointementsService: AppointementsService) {}
 

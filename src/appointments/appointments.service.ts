@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import {
+  CreateAppointmentDto,
+  StatusAppointment,
+} from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAppointementDto } from './dto/update-appointment.dto';
 import { PatientsService } from 'src/patients/patients.service';
@@ -19,11 +22,13 @@ export class AppointementsService {
       const checkStartAppointment = createAppointmentDto.startDate;
       const checkEndAppointment = createAppointmentDto.endDate;
 
-      const AvailablePatient = await this.patient.findOne(
+      const AvailablePatient = await this.patient.findAppointmentByStatus(
         createAppointmentDto.patient_id,
+        StatusAppointment.Completed,
       );
-      const availableDoctor = await this.doctor.findOne(
+      const availableDoctor = await this.doctor.findByStatus(
         createAppointmentDto.doctor_id,
+        StatusAppointment.Completed,
       );
 
       const patientConflict = AvailablePatient.appointements.some(

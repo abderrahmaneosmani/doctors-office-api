@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-enum Status {
+export enum StatusAppointment {
   'Completed' = 'completed',
   'Cancel' = 'cancel',
 }
@@ -20,8 +20,8 @@ export class CreateAppointmentDto {
   @ApiProperty()
   reason: string;
   @ApiProperty({
-    enum: Status,
+    enum: StatusAppointment,
     enumName: 'status',
   })
-  status: Status;
+  status: StatusAppointment;
 }

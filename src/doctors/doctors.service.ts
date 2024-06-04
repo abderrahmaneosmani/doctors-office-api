@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StatusAppointment } from 'src/appointments/dto/create-appointment.dto';
 
 @Injectable()
 export class DoctorsService {
@@ -43,6 +44,18 @@ export class DoctorsService {
       where: { id },
       include: {
         appointements: true,
+      },
+    });
+  }
+  async findByStatus(id: number, status: StatusAppointment) {
+    return await this.prisma.doctor.findUnique({
+      where: { id },
+      include: {
+        appointements: {
+          where: {
+            status: status,
+          },
+        },
       },
     });
   }
