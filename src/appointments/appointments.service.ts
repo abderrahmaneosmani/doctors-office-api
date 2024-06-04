@@ -47,7 +47,6 @@ export class AppointementsService {
           return start && end;
         },
       );
-      console.log('available', availableDoctor?.appointements);
       const doctorConflict = await availableDoctor?.appointements?.some(
         (appointement) => {
           const start = checkAvailableDate(

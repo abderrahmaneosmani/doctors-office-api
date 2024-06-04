@@ -11,7 +11,10 @@ import { AppointementsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointementDto } from './dto/update-appointment.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from '@prisma/client';
 
+@Roles(Role.DOCTOR)
 @Controller('appointements')
 @ApiBearerAuth()
 export class AppointementsController {

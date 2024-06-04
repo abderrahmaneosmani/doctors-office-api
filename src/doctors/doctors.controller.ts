@@ -19,7 +19,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class DoctorsController {
   constructor(private readonly doctorsService: DoctorsService) {}
 
-  @Roles(Role.DOCTOR, Role.PATIENT, Role.USER)
+  @Roles(Role.DOCTOR, Role.USER)
   @Post()
   create(@Body() createDoctorDto: CreateDoctorDto) {
     return this.doctorsService.create(createDoctorDto);
