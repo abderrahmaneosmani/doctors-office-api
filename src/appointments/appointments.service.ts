@@ -26,12 +26,13 @@ export class AppointementsService {
         createAppointmentDto.patient_id,
         StatusAppointment.Completed,
       );
+
       const availableDoctor = await this.doctor.findByStatus(
         createAppointmentDto.doctor_id,
         StatusAppointment.Completed,
       );
 
-      const patientConflict = AvailablePatient.appointements.some(
+      const patientConflict = AvailablePatient?.appointements?.some(
         (appointement) => {
           const start = checkAvailableDate(
             checkStartAppointment,
@@ -46,7 +47,8 @@ export class AppointementsService {
           return start && end;
         },
       );
-      const doctorConflict = await availableDoctor.appointements.some(
+      console.log('available', availableDoctor?.appointements);
+      const doctorConflict = await availableDoctor?.appointements?.some(
         (appointement) => {
           const start = checkAvailableDate(
             checkStartAppointment,
