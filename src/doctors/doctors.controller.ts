@@ -12,14 +12,14 @@ import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from '@prisma/client';
-import { Public } from 'src/auth/utils';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('doctors')
+@ApiBearerAuth()
 export class DoctorsController {
   constructor(private readonly doctorsService: DoctorsService) {}
 
-  @Public()
-  @Roles(Role.DOCTOR)
+  @Roles(Role.DOCTOR, Role.PATIENT, Role.USER)
   @Post()
   create(@Body() createDoctorDto: CreateDoctorDto) {
     return this.doctorsService.create(createDoctorDto);
