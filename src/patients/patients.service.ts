@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -29,7 +29,7 @@ export class PatientsService {
         const patient = await tr.patient.create({
           data: {
             userId: user.id,
-            date_of_brirh: new Date('2020'),
+            date_of_brirh: new Date(createPatientDto.date_of_brirh),
             address: createPatientDto.address,
           },
         });
@@ -47,7 +47,8 @@ export class PatientsService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.patient.findUnique({
+    console.log('onnee', id);
+    const patients = await this.prisma.patient.findUnique({
       where: {
         id,
       },
@@ -55,6 +56,10 @@ export class PatientsService {
         appointements: true,
       },
     });
+    if (!patients) {
+      throw new NotFoundException('not patient');
+    }
+    return patients;
   }
 
   async update(id: number, updatePatientDto: UpdatePatientDto) {
@@ -85,5 +90,19 @@ export class PatientsService {
     return await this.prisma.patient.delete({
       where: { id },
     });
+  }
+  async findPatientByUserId(userId: number) {
+    const patient = await this.prisma.patient.findUnique({
+      where: {
+        userId: userId,
+      },
+      include: {
+        appointements: true,
+      },
+    });
+    if (!patient) {
+      throw new NotFoundException('not patient');
+    }
+    return patient;
   }
 }

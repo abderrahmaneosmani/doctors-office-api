@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
@@ -16,6 +17,11 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @ApiBearerAuth()
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
+
+  @Get('appointments/me')
+  getMe(@Req() req) {
+    return this.patientsService.findPatientByUserId(req.user.sub);
+  }
 
   @Post()
   create(@Body() createPatientDto: CreatePatientDto) {
