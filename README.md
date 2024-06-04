@@ -46,7 +46,7 @@ $ pnpm run start:prod
 ```
 
 ## Swagger api
-browse the api on this link (https://http://localhost:3000/api/).
+browse the api on this link (http://localhost:3000/api/).
 
 
 ```bash
